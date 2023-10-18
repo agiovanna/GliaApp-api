@@ -1,0 +1,274 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Profissional {
+  tb_profissional_id            Int      @id @default(autoincrement())
+  tb_profissional_nome          String
+  tb_profissional_cpf           String   @unique
+  tb_profissional_dt_nasc       DateTime
+  tb_profissional_email         String   @unique
+  tb_profissional_senha         String
+  tb_profissional_tel           String
+  tb_profissional_cnpj          String?   @unique
+  tb_profissional_nome_fantasia String?
+  tb_profissional_cep           String
+  tb_profissional_rua           String
+  tb_profissional_bairro        String
+  tb_profissional_num           String
+  tb_profissional_cidade        String
+  tb_profissional_estado        String
+  tb_profissional_complemento   String?
+  tb_profissional_status        Boolean  @default(false)
+
+  //relations 
+
+  servico  Servico[]
+  catalogo Catalogo[]
+
+  //foto de perfil
+
+  @@map("tb_profissional")
+}
+
+model Item {
+  tb_item_id      Int     @id @default(autoincrement())
+  tb_item_nome    String
+  tb_item_desc    String?
+  tb_item_valor   Decimal
+  tb_item_tempo   Int
+  tb_categoria_id Int
+  tb_catalogo_id  Int
+
+  //relations
+  solicitacao Solicitacao[]
+
+  categoria Categoria @relation(fields: [tb_categoria_id], references: [tb_categoria_id])
+  catalogo  Catalogo  @relation(fields: [tb_catalogo_id], references: [tb_catalogo_id])
+
+  @@map("tb_item")
+}
+
+model Categoria {
+  tb_categoria_id   Int    @id @default(autoincrement())
+  tb_categoria_nome String @db.VarChar(16)
+
+  //relation
+  itens Item[]
+
+  @@map("tb_categoria")
+}
+
+model Catalogo {
+  tb_catalogo_id     Int     @id @default(autoincrement())
+  tb_catalogo_nome   String
+  tb_catalogo_desc   String?
+
+  //relations
+  tb_profissional_id Int
+  profissional Profissional @relation(fields: [tb_profissional_id], references: [tb_profissional_id])
+
+  itens Item[]
+
+  
+
+  @@map("tb_catalogo")
+}
+
+model Cliente {
+  tb_cliente_id      Int      @id @default(autoincrement())
+  tb_cliente_nome    String
+  tb_cliente_dt_nasc DateTime
+  tb_cliente_email   String   @unique
+  tb_cliente_tel     String
+  tb_cliente_senha   String
+
+  //relations
+  fichaAnamnese FichaAnamnese?
+  solicitacao   Solicitacao[]
+
+
+  @@map("tb_cliente")
+}
+
+model FichaAnamnese {
+  tb_ficha_anamnese_id          Int     @id @default(autoincrement())
+  tb_ficha_anamnese_gestante    String
+  tb_ficha_anamnese_diabetes    Boolean
+  tb_ficha_anamnese_medicacao   String
+  tb_ficha_anamnese_alergia     String
+  tb_ficha_anamnese_convulsao   Boolean
+  tb_ficha_anamnese_hemofilico  Boolean
+  tb_ficha_anamnese_hipertensao Boolean
+  tb_ficha_anamnese_tireoide    Boolean
+  tb_cliente_id                 Int
+
+  //relations 
+  cliente             Cliente             @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
+  anamneseSobrancelha AnamneseSobrancelha?
+  anamneseMaquiagem   AnamneseMaquiagem?
+  anamneseUnha        AnamneseUnhas?
+  anamneseCilios      AnamneseCilios?
+  anamneseCabelo      AnamneseCabelo?
+
+  //relations 
+
+  @@unique([tb_cliente_id])
+  @@map("tb_ficha_anamnese")
+}
+
+model AnamneseSobrancelha {
+  tb_anamnese_sob_id             Int     @id @default(autoincrement())
+  tb_anamnese_sob_queda_pelos    Boolean
+  tb_anamnese_sob_alergia_henna  Boolean
+  tb_anamnese_sob_chumbo         Boolean
+  tb_anamnese_sob_sensi          String
+  tb_anamnese_sob_caspa          Boolean
+  tb_anamnese_sob_tipo_pele      String
+  tb_anamnese_sob_tipo_pelo      String
+  tb_anamnese_sob_info_relevante String?
+  tb_ficha_anamnese_id           Int
+
+  //relation
+  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+
+  @@unique([tb_ficha_anamnese_id])
+  @@map("tb_anamnese_sob")
+}
+
+model AnamneseMaquiagem {
+  tb_anamnese_maq_id             Int     @id @default(autoincrement())
+  tb_anamnese_maq_tratamento     String
+  tb_anamnese_maq_macha_pele     Boolean
+  tb_anamnese_maq_lente_cont     Boolean
+  tb_anamnese_maq_tipo_pele      String
+  tb_anamnese_maq_oleosidade     String
+  tb_anamnese_maq_prob_pele      String
+  tb_anamnese_maq_cirurgia_rosto String
+  tb_anamnese_maq_info_relevante String?
+  tb_ficha_anamnese_id           Int
+
+  //relation
+  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+
+  @@unique([tb_ficha_anamnese_id])
+  @@map("tb_anamnese_maq")
+}
+
+model AnamneseUnhas {
+  tb_anamnese_unhas_id               Int     @id @default(autoincrement())
+  tb_anamnese_unhas_ret_cuticula     Boolean
+  tb_anamnese_unhas_encravada        Boolean
+  tb_anamnese_unhas_prob_onicomicose String
+  tb_anamnese_unhas_prob             String
+  tb_anamnese_unhas_roer_unha        Boolean
+  tb_anamnese_unhas_esportes_impacto Boolean
+  tb_anamnese_unhas_pisc_mar         Boolean
+  tb_anamnese_unhas_info_relevante   String?
+  tb_ficha_anamnese_id               Int
+
+  //relation
+  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+
+  @@unique([tb_ficha_anamnese_id])
+  @@map("tb_anamnese_unhas")
+}
+
+model AnamneseCilios {
+  tb_anamnese_cil_id             Int     @id @default(autoincrement())
+  tb_anamnese_cil_tratamento     String
+  tb_anamnese_cil_procedimento   String
+  tb_anamnese_cil_prob_oftalmo   String
+  tb_anamnese_cil_dorme_lado     Boolean
+  tb_anamnese_cil_uso_colirio    Boolean
+  tb_anamnese_cil_doenca         String
+  tb_anamnese_cil_info_relevante String?
+  tb_ficha_anamnese_id           Int
+
+  //relation
+  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+
+  @@unique([tb_ficha_anamnese_id])
+  @@map("tb_anamnese_cilios")
+}
+
+model AnamneseCabelo {
+  tb_anamnese_cab_id                Int     @id @default(autoincrement())
+  tb_anamnese_cab_prob_saude        String
+  tb_anamnese_cab_quimica           String
+  tb_anamnese_cab_frequencia        Int
+  tb_anamnese_cab_prob_cap_familiar String
+  tb_anamnese_cab_doenca_cc         String
+  tb_anamnese_cab_cirurgia_lesao    String
+  tb_anamnese_cab_info_relevante    String?
+  tb_ficha_anamnese_id              Int
+
+  //relation
+  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+
+  @@unique([tb_ficha_anamnese_id])
+  @@map("tb_anamnese_cabelo")
+}
+
+model Solicitacao {
+  tb_solicitacao_id        Int      @id @default(autoincrement())
+  tb_solicitacao_createdAt DateTime @default(now())
+  tb_solicitacao_updateAt  DateTime @updatedAt
+  tb_solicitacao_rua       String
+  tb_solicitiacao_bairro   String
+  tb_solicitacao_num       String
+  tb_solicitacao_comp      String?
+  tb_solicitacao_cidade    String
+  tb_solicitacao_estado    String
+  tb_solicitacao_status    String
+  tb_solicitacao_longitude Float
+  tb_solicitacao_latitude  Float
+  tb_item_id               Int
+  tb_cliente_id            Int
+
+  //relations
+  item    Item      @relation(fields: [tb_item_id], references: [tb_item_id])
+  cliente Cliente   @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
+  servico Servico?
+
+  @@map("tb_solicitacao")
+}
+
+model Servico {
+  tb_servico_id          Int      @id @default(autoincrement())
+  tb_servico_status      String
+  tb_servico_hora_inicio DateTime
+  tb_servico_hora_final  DateTime
+  tb_solicitacao_id      Int
+  tb_profissional_id     Int
+
+  //relations
+  solicitacao  Solicitacao  @relation(fields: [tb_solicitacao_id], references: [tb_solicitacao_id])
+  avaliacao    Avaliacao?
+  profissional Profissional @relation(fields: [tb_profissional_id], references: [tb_profissional_id])
+
+  @@unique([tb_solicitacao_id])
+  @@map("tb_servico")
+}
+
+model Avaliacao {
+  tb_avaliacao_id   Int @id @default(autoincrement())
+  tb_avaliacao_nota Float
+  tb_servico_id     Int
+
+  //relation
+  servico Servico @relation(fields: [tb_servico_id], references: [tb_servico_id])
+
+  @@unique([tb_servico_id])
+  @@map("tb_avaliacao")
+}
