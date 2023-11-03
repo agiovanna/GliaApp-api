@@ -29,6 +29,8 @@ model Profissional {
   tb_profissional_cidade        String
   tb_profissional_estado        String
   tb_profissional_complemento   String?
+  tb_profissional_latitude      Float?
+  tb_profissional_longitude     Float?
   tb_profissional_status        Boolean  @default(false)
 
   //relations 

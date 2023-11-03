@@ -24,6 +24,8 @@ export async function appRoutes(app: FastifyInstance) {
             fantasyName: z.string(),
             email: z.string(),
             password: z.string(),
+            latitude: z.number(),
+            longitude: z.number(),
         });
 
         const {
@@ -42,6 +44,8 @@ export async function appRoutes(app: FastifyInstance) {
             fantasyName,
             email,
             password,
+            latitude,
+            longitude
         } = createProfessionalBody.parse(request.body);
 
 
@@ -62,6 +66,8 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_profissional_nome_fantasia: fantasyName,
                 tb_profissional_email: email,
                 tb_profissional_senha: password,
+                tb_profissional_latitude: latitude,
+                tb_profissional_longitude: longitude
             }
         });
     });
@@ -109,7 +115,7 @@ export async function appRoutes(app: FastifyInstance) {
             tireoide: z.boolean(),
             clienteId: z.number(),
         });
-    
+
         const {
             gestante,
             diabetes,
@@ -121,7 +127,7 @@ export async function appRoutes(app: FastifyInstance) {
             tireoide,
             clienteId,
         } = createFichaAnamneseBody.parse(request.body);
-    
+
         await prisma.fichaAnamnese.create({
             data: {
                 tb_ficha_anamnese_gestante: gestante,
@@ -137,7 +143,7 @@ export async function appRoutes(app: FastifyInstance) {
         });
     });
 
-        //Crinado Ficha de anmnese de sobrancelha
+    //Crinado Ficha de anmnese de sobrancelha
     app.post('/createAnamneseSobrancelha', async (request) => {
         const createAnamneseSobrancelhaBody = z.object({
             quedaPelos: z.boolean(),
@@ -150,7 +156,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante: z.string(),
             fichaAnamneseId: z.number(),
         });
-    
+
         const {
             quedaPelos,
             alergiaHenna,
@@ -162,7 +168,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante,
             fichaAnamneseId,
         } = createAnamneseSobrancelhaBody.parse(request.body);
-    
+
         await prisma.anamneseSobrancelha.create({
             data: {
                 tb_anamnese_sob_queda_pelos: quedaPelos,
@@ -191,7 +197,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante: z.string(),
             fichaAnamneseId: z.number(),
         });
-    
+
         const {
             tratamento,
             machaPele,
@@ -203,7 +209,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante,
             fichaAnamneseId,
         } = createAnamneseMaquiagemBody.parse(request.body);
-    
+
         await prisma.anamneseMaquiagem.create({
             data: {
                 tb_anamnese_maq_tratamento: tratamento,
@@ -221,44 +227,44 @@ export async function appRoutes(app: FastifyInstance) {
 
     //Ficha de anmnese de unhas
     app.post('/createAnamneseUnhas', async (request) => {
-    const createAnamneseUnhasBody = z.object({
-        retCuticula: z.boolean(),
-        encravada: z.boolean(),
-        probOnicomicose: z.string(),
-        prob: z.string(),
-        roerUnha: z.boolean(),
-        esportesImpacto: z.boolean(),
-        piscMar: z.boolean(),
-        infoRelevante: z.string(),
-        fichaAnamneseId: z.number(),
-    });
+        const createAnamneseUnhasBody = z.object({
+            retCuticula: z.boolean(),
+            encravada: z.boolean(),
+            probOnicomicose: z.string(),
+            prob: z.string(),
+            roerUnha: z.boolean(),
+            esportesImpacto: z.boolean(),
+            piscMar: z.boolean(),
+            infoRelevante: z.string(),
+            fichaAnamneseId: z.number(),
+        });
 
-    const {
-        retCuticula,
-        encravada,
-        probOnicomicose,
-        prob,
-        roerUnha,
-        esportesImpacto,
-        piscMar,
-        infoRelevante,
-        fichaAnamneseId,
-    } = createAnamneseUnhasBody.parse(request.body);
+        const {
+            retCuticula,
+            encravada,
+            probOnicomicose,
+            prob,
+            roerUnha,
+            esportesImpacto,
+            piscMar,
+            infoRelevante,
+            fichaAnamneseId,
+        } = createAnamneseUnhasBody.parse(request.body);
 
-    await prisma.anamneseUnhas.create({
-        data: {
-            tb_anamnese_unhas_ret_cuticula: retCuticula,
-            tb_anamnese_unhas_encravada: encravada,
-            tb_anamnese_unhas_prob_onicomicose: probOnicomicose,
-            tb_anamnese_unhas_prob: prob,
-            tb_anamnese_unhas_roer_unha: roerUnha,
-            tb_anamnese_unhas_esportes_impacto: esportesImpacto,
-            tb_anamnese_unhas_pisc_mar: piscMar,
-            tb_anamnese_unhas_info_relevante: infoRelevante,
-            tb_ficha_anamnese_id: fichaAnamneseId,
-        }
+        await prisma.anamneseUnhas.create({
+            data: {
+                tb_anamnese_unhas_ret_cuticula: retCuticula,
+                tb_anamnese_unhas_encravada: encravada,
+                tb_anamnese_unhas_prob_onicomicose: probOnicomicose,
+                tb_anamnese_unhas_prob: prob,
+                tb_anamnese_unhas_roer_unha: roerUnha,
+                tb_anamnese_unhas_esportes_impacto: esportesImpacto,
+                tb_anamnese_unhas_pisc_mar: piscMar,
+                tb_anamnese_unhas_info_relevante: infoRelevante,
+                tb_ficha_anamnese_id: fichaAnamneseId,
+            }
+        });
     });
-});
 
     //Ficha de anmnese de cílios
     app.post('/createAnamneseCilios', async (request) => {
@@ -272,7 +278,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante: z.string(),
             fichaAnamneseId: z.number(),
         });
-    
+
         const {
             tratamento,
             procedimento,
@@ -283,7 +289,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante,
             fichaAnamneseId,
         } = createAnamneseCiliosBody.parse(request.body);
-    
+
         await prisma.anamneseCilios.create({
             data: {
                 tb_anamnese_cil_tratamento: tratamento,
@@ -310,7 +316,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante: z.string(),
             fichaAnamneseId: z.number(),
         });
-    
+
         const {
             probSaude,
             quimica,
@@ -321,7 +327,7 @@ export async function appRoutes(app: FastifyInstance) {
             infoRelevante,
             fichaAnamneseId,
         } = createAnamneseCabeloBody.parse(request.body);
-    
+
         await prisma.anamneseCabelo.create({
             data: {
                 tb_anamnese_cab_prob_saude: probSaude,
@@ -345,21 +351,63 @@ export async function appRoutes(app: FastifyInstance) {
     });
 
 
-    //Mostrando clientes cadastrados
+    //Mostrando nome de clientes cadastrados
     app.get('/getClients', async () => {
 
         /*const clients = await prisma.cliente.findMany()
 
         return { clients };*/
 
-        const cliente = await prisma.cliente.findMany();
+        const cliente = await prisma.cliente.findMany({
+            where: {
+                tb_cliente_id: 2,
+            }
+        })
 
-        const cliente1 = cliente.map(cliente => cliente.tb_cliente_nome);
-
-
-        return cliente1;
+        return cliente;
     });
-    
+
+
+    //Mostrando profissionais online
+    app.get('/getProfessionalsOn', async () => {
+
+
+        const professionals = await prisma.profissional.findMany({
+            where: {
+                tb_profissional_status: true
+            }
+        });
+
+        //const professionalOn = professionals.map(professional => professional.tb_profissional_latitude);
+
+        return professionals;
+    });
+
+    // Atualizar a localização no banco de dados
+    app.put('/saveLocation', async (request) => {
+        const updateLocation = z.object({
+            longitude: z.number(),
+            latitude: z.number()
+        });
+
+        const {
+            longitude,
+            latitude
+        } = updateLocation.parse(request.body);
+
+        const profissionalId = 8;
+
+        await prisma.profissional.update({
+            where: {
+                tb_profissional_id: profissionalId,
+            },
+            data: {
+                tb_profissional_latitude: latitude,
+                tb_profissional_longitude: longitude
+            }
+        });
+    });
+
 }
 
 
