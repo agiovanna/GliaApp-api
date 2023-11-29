@@ -90,22 +90,22 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@prisma/client@^5.2.0":
-  "integrity" "sha512-JEo7J24OgEyNJg6hWRecIj6NJcB0chBCXFhWoO5exDVReMxiaY801lLLd6KStVFJHCWVEWoMLPUqhOvQA5MUuw=="
-  "resolved" "https://registry.npmjs.org/@prisma/client/-/client-5.4.0.tgz"
-  "version" "5.4.0"
+"@prisma/client@^5.6.0":
+  "integrity" "sha512-mUDefQFa1wWqk4+JhKPYq8BdVoFk9NFMBXUI8jAkBfQTtgx8WPx02U2HB/XbAz3GSUJpeJOKJQtNvaAIDs6sug=="
+  "resolved" "https://registry.npmjs.org/@prisma/client/-/client-5.6.0.tgz"
+  "version" "5.6.0"
   dependencies:
-    "@prisma/engines-version" "5.4.0-47.a5596b96668f0f4b397761ce0956db54e17e48c4"
+    "@prisma/engines-version" "5.6.0-32.e95e739751f42d8ca026f6b910f5a2dc5adeaeee"
 
-"@prisma/engines-version@5.4.0-47.a5596b96668f0f4b397761ce0956db54e17e48c4":
-  "integrity" "sha512-liWWFhIL5hMhVt4f9HWqMSnBgVicVFGKsEzO5gBfLr9aG1JgjjMDYNmqqLji0Hp0VpD8ffTQTOVZDJRUVBD4dw=="
-  "resolved" "https://registry.npmjs.org/@prisma/engines-version/-/engines-version-5.4.0-47.a5596b96668f0f4b397761ce0956db54e17e48c4.tgz"
-  "version" "5.4.0-47.a5596b96668f0f4b397761ce0956db54e17e48c4"
+"@prisma/engines-version@5.6.0-32.e95e739751f42d8ca026f6b910f5a2dc5adeaeee":
+  "integrity" "sha512-UoFgbV1awGL/3wXuUK3GDaX2SolqczeeJ5b4FVec9tzeGbSWJboPSbT0psSrmgYAKiKnkOPFSLlH6+b+IyOwAw=="
+  "resolved" "https://registry.npmjs.org/@prisma/engines-version/-/engines-version-5.6.0-32.e95e739751f42d8ca026f6b910f5a2dc5adeaeee.tgz"
+  "version" "5.6.0-32.e95e739751f42d8ca026f6b910f5a2dc5adeaeee"
 
-"@prisma/engines@5.4.2":
-  "integrity" "sha512-fqeucJ3LH0e1eyFdT0zRx+oETLancu5+n4lhiYECyEz6H2RDskPJHJYHkVc0LhkU4Uv7fuEnppKU3nVKNzMh8g=="
-  "resolved" "https://registry.npmjs.org/@prisma/engines/-/engines-5.4.2.tgz"
-  "version" "5.4.2"
+"@prisma/engines@5.6.0":
+  "integrity" "sha512-Mt2q+GNJpU2vFn6kif24oRSBQv1KOkYaterQsi0k2/lA+dLvhRX6Lm26gon6PYHwUM8/h8KRgXIUMU0PCLB6bw=="
+  "resolved" "https://registry.npmjs.org/@prisma/engines/-/engines-5.6.0.tgz"
+  "version" "5.6.0"
 
 "@socket.io/component-emitter@~3.1.0":
   "integrity" "sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg=="
@@ -815,12 +815,12 @@
     "sonic-boom" "^3.1.0"
     "thread-stream" "^2.0.0"
 
-"prisma@*", "prisma@^5.4.2":
-  "integrity" "sha512-GDMZwZy7mysB2oXU+angQqJ90iaPFdD0rHaZNkn+dio5NRkGLmMqmXs31//tg/qXT3iB0cTQwnGGQNuirhSTZg=="
-  "resolved" "https://registry.npmjs.org/prisma/-/prisma-5.4.2.tgz"
-  "version" "5.4.2"
+"prisma@*", "prisma@^5.6.0":
+  "integrity" "sha512-EEaccku4ZGshdr2cthYHhf7iyvCcXqwJDvnoQRAJg5ge2Tzpv0e2BaMCp+CbbDUwoVTzwgOap9Zp+d4jFa2O9A=="
+  "resolved" "https://registry.npmjs.org/prisma/-/prisma-5.6.0.tgz"
+  "version" "5.6.0"
   dependencies:
-    "@prisma/engines" "5.4.2"
+    "@prisma/engines" "5.6.0"
 
 "process-warning@^2.0.0", "process-warning@^2.2.0":
   "integrity" "sha512-/1WZ8+VQjR6avWOgHeEPd7SDQmFQ1B5mC1eRXsCm5TarlNmx/wCsa5GEaxGm05BORRtyG/Ex/3xq3TuRvq57qg=="

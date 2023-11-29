@@ -11,7 +11,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 model Profissional {
   tb_profissional_id            Int      @id @default(autoincrement())
   tb_profissional_nome          String
@@ -20,7 +19,7 @@ model Profissional {
   tb_profissional_email         String   @unique
   tb_profissional_senha         String
   tb_profissional_tel           String
-  tb_profissional_cnpj          String?   @unique
+  tb_profissional_cnpj          String?  @unique
   tb_profissional_nome_fantasia String?
   tb_profissional_cep           String
   tb_profissional_rua           String
@@ -32,8 +31,9 @@ model Profissional {
   tb_profissional_latitude      Float?
   tb_profissional_longitude     Float?
   tb_profissional_status        Boolean  @default(false)
+  tb_profissional_img           String?
 
-  //relations 
+  //relações 
 
   servico  Servico[]
   catalogo Catalogo[]
@@ -48,11 +48,12 @@ model Item {
   tb_item_nome    String
   tb_item_desc    String?
   tb_item_valor   Decimal
+  tb_item_imagem  String
   tb_item_tempo   Int
   tb_categoria_id Int
   tb_catalogo_id  Int
 
-  //relations
+  //relações
   solicitacao Solicitacao[]
 
   categoria Categoria @relation(fields: [tb_categoria_id], references: [tb_categoria_id])
@@ -72,38 +73,44 @@ model Categoria {
 }
 
 model Catalogo {
-  tb_catalogo_id     Int     @id @default(autoincrement())
-  tb_catalogo_nome   String
-  tb_catalogo_desc   String?
+  tb_catalogo_id   Int     @id @default(autoincrement())
+  tb_catalogo_nome String
+  tb_catalogo_desc String?
 
   //relations
   tb_profissional_id Int
-  profissional Profissional @relation(fields: [tb_profissional_id], references: [tb_profissional_id])
+  profissional       Profissional @relation(fields: [tb_profissional_id], references: [tb_profissional_id])
 
   itens Item[]
-
-  
 
   @@map("tb_catalogo")
 }
 
 model Cliente {
-  tb_cliente_id      Int      @id @default(autoincrement())
-  tb_cliente_nome    String
-  tb_cliente_dt_nasc DateTime
-  tb_cliente_email   String   @unique
-  tb_cliente_tel     String
-  tb_cliente_senha   String
+  tb_cliente_id        Int      @id @default(autoincrement())
+  tb_cliente_nome      String
+  tb_cliente_dt_nasc   DateTime
+  tb_cliente_email     String   @unique
+  tb_cliente_tel       String
+  tb_cliente_senha     String
+  tb_cliente_longitude Float
+  tb_cliente_latitude  Float
+  tb_cliente_img       String?
+  tb_cliente_cpf       String
 
   //relations
-  fichaAnamnese FichaAnamnese?
-  solicitacao   Solicitacao[]
-
+  fichaAnamnese       AnamneseGeral?
+  solicitacao         Solicitacao[]
+  AnamneseSobrancelha AnamneseSobrancelha?
+  AnamneseMaquiagem   AnamneseMaquiagem?
+  AnamneseUnhas       AnamneseUnhas?
+  AnamneseCilios      AnamneseCilios?
+  AnamneseCabelo      AnamneseCabelo?
 
   @@map("tb_cliente")
 }
 
-model FichaAnamnese {
+model AnamneseGeral {
   tb_ficha_anamnese_id          Int     @id @default(autoincrement())
   tb_ficha_anamnese_gestante    String
   tb_ficha_anamnese_diabetes    Boolean
@@ -116,14 +123,7 @@ model FichaAnamnese {
   tb_cliente_id                 Int
 
   //relations 
-  cliente             Cliente             @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
-  anamneseSobrancelha AnamneseSobrancelha?
-  anamneseMaquiagem   AnamneseMaquiagem?
-  anamneseUnha        AnamneseUnhas?
-  anamneseCilios      AnamneseCilios?
-  anamneseCabelo      AnamneseCabelo?
-
-  //relations 
+  cliente Cliente @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
 
   @@unique([tb_cliente_id])
   @@map("tb_ficha_anamnese")
@@ -136,34 +136,34 @@ model AnamneseSobrancelha {
   tb_anamnese_sob_chumbo         Boolean
   tb_anamnese_sob_sensi          String
   tb_anamnese_sob_caspa          Boolean
-  tb_anamnese_sob_tipo_pele      String
+  tb_anamnese_sob_oleo_pele      String
   tb_anamnese_sob_tipo_pelo      String
   tb_anamnese_sob_info_relevante String?
-  tb_ficha_anamnese_id           Int
+  tb_cliente_id                  Int
 
-  //relation
-  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+  //relations 
+  cliente Cliente @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
 
-  @@unique([tb_ficha_anamnese_id])
+  @@unique([tb_cliente_id])
   @@map("tb_anamnese_sob")
 }
 
 model AnamneseMaquiagem {
   tb_anamnese_maq_id             Int     @id @default(autoincrement())
   tb_anamnese_maq_tratamento     String
-  tb_anamnese_maq_macha_pele     Boolean
+  tb_anamnese_maq_mancha_pele    Boolean
   tb_anamnese_maq_lente_cont     Boolean
   tb_anamnese_maq_tipo_pele      String
   tb_anamnese_maq_oleosidade     String
   tb_anamnese_maq_prob_pele      String
   tb_anamnese_maq_cirurgia_rosto String
   tb_anamnese_maq_info_relevante String?
-  tb_ficha_anamnese_id           Int
+  tb_cliente_id                  Int
 
-  //relation
-  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+  //relations 
+  cliente Cliente @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
 
-  @@unique([tb_ficha_anamnese_id])
+  @@unique([tb_cliente_id])
   @@map("tb_anamnese_maq")
 }
 
@@ -177,12 +177,12 @@ model AnamneseUnhas {
   tb_anamnese_unhas_esportes_impacto Boolean
   tb_anamnese_unhas_pisc_mar         Boolean
   tb_anamnese_unhas_info_relevante   String?
-  tb_ficha_anamnese_id               Int
+  tb_cliente_id                      Int
 
-  //relation
-  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+  //relations 
+  cliente Cliente @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
 
-  @@unique([tb_ficha_anamnese_id])
+  @@unique([tb_cliente_id])
   @@map("tb_anamnese_unhas")
 }
 
@@ -195,12 +195,12 @@ model AnamneseCilios {
   tb_anamnese_cil_uso_colirio    Boolean
   tb_anamnese_cil_doenca         String
   tb_anamnese_cil_info_relevante String?
-  tb_ficha_anamnese_id           Int
+  tb_cliente_id                  Int
 
-  //relation
-  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+  //relations 
+  cliente Cliente @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
 
-  @@unique([tb_ficha_anamnese_id])
+  @@unique([tb_cliente_id])
   @@map("tb_anamnese_cilios")
 }
 
@@ -213,12 +213,12 @@ model AnamneseCabelo {
   tb_anamnese_cab_doenca_cc         String
   tb_anamnese_cab_cirurgia_lesao    String
   tb_anamnese_cab_info_relevante    String?
-  tb_ficha_anamnese_id              Int
+  tb_cliente_id                     Int
 
-  //relation
-  fichaAnamnese FichaAnamnese @relation(fields: [tb_ficha_anamnese_id], references: [tb_ficha_anamnese_id])
+  //relations 
+  cliente Cliente @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
 
-  @@unique([tb_ficha_anamnese_id])
+  @@unique([tb_cliente_id])
   @@map("tb_anamnese_cabelo")
 }
 
@@ -226,21 +226,13 @@ model Solicitacao {
   tb_solicitacao_id        Int      @id @default(autoincrement())
   tb_solicitacao_createdAt DateTime @default(now())
   tb_solicitacao_updateAt  DateTime @updatedAt
-  tb_solicitacao_rua       String
-  tb_solicitiacao_bairro   String
-  tb_solicitacao_num       String
-  tb_solicitacao_comp      String?
-  tb_solicitacao_cidade    String
-  tb_solicitacao_estado    String
   tb_solicitacao_status    String
-  tb_solicitacao_longitude Float
-  tb_solicitacao_latitude  Float
   tb_item_id               Int
   tb_cliente_id            Int
 
   //relations
-  item    Item      @relation(fields: [tb_item_id], references: [tb_item_id])
-  cliente Cliente   @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
+  item    Item     @relation(fields: [tb_item_id], references: [tb_item_id])
+  cliente Cliente  @relation(fields: [tb_cliente_id], references: [tb_cliente_id])
   servico Servico?
 
   @@map("tb_solicitacao")
@@ -264,7 +256,7 @@ model Servico {
 }
 
 model Avaliacao {
-  tb_avaliacao_id   Int @id @default(autoincrement())
+  tb_avaliacao_id   Int   @id @default(autoincrement())
   tb_avaliacao_nota Float
   tb_servico_id     Int
 
