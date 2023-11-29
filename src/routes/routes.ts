@@ -26,6 +26,7 @@ export async function appRoutes(app: FastifyInstance) {
             password: z.string(),
             latitude: z.number(),
             longitude: z.number(),
+            imgProfessional: z.string(),
         });
 
         const {
@@ -45,7 +46,8 @@ export async function appRoutes(app: FastifyInstance) {
             email,
             password,
             latitude,
-            longitude
+            longitude,
+            imgProfessional
         } = createProfessionalBody.parse(request.body);
 
 
@@ -67,7 +69,8 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_profissional_email: email,
                 tb_profissional_senha: password,
                 tb_profissional_latitude: latitude,
-                tb_profissional_longitude: longitude
+                tb_profissional_longitude: longitude,
+                tb_profissional_img: imgProfessional
             }
         });
     });
@@ -75,12 +78,17 @@ export async function appRoutes(app: FastifyInstance) {
 
     //Criando cliente
     app.post('/createClient', async (request) => {
+
         const createClientBody = z.object({
             name: z.string(),
             birthDate: z.string().datetime(),
             telephone: z.string(),
             email: z.string(),
             password: z.string(),
+            latitude: z.number(),
+            longitude: z.number(),
+            imgClient: z.string(),
+            cpf: z.string()
         });
 
         const {
@@ -88,7 +96,11 @@ export async function appRoutes(app: FastifyInstance) {
             birthDate,
             telephone,
             email,
-            password
+            password,
+            latitude,
+            longitude,
+            imgClient,
+            cpf
         } = createClientBody.parse(request.body);
 
         await prisma.cliente.create({
@@ -98,6 +110,10 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_cliente_tel: telephone,
                 tb_cliente_email: email,
                 tb_cliente_senha: password,
+                tb_cliente_latitude: latitude,
+                tb_cliente_longitude: longitude,
+                tb_cliente_img: imgClient,
+                tb_cliente_cpf: cpf
             }
         });
     });
@@ -128,7 +144,7 @@ export async function appRoutes(app: FastifyInstance) {
             clienteId,
         } = createFichaAnamneseBody.parse(request.body);
 
-        await prisma.fichaAnamnese.create({
+        await prisma.anamneseGeral.create({
             data: {
                 tb_ficha_anamnese_gestante: gestante,
                 tb_ficha_anamnese_diabetes: diabetes,
@@ -151,10 +167,10 @@ export async function appRoutes(app: FastifyInstance) {
             chumbo: z.boolean(),
             sensi: z.string(),
             caspa: z.boolean(),
-            tipoPele: z.string(),
+            oleoPele: z.string(),
             tipoPelo: z.string(),
             infoRelevante: z.string(),
-            fichaAnamneseId: z.number(),
+            clientId: z.number(),
         });
 
         const {
@@ -163,10 +179,10 @@ export async function appRoutes(app: FastifyInstance) {
             chumbo,
             sensi,
             caspa,
-            tipoPele,
+            oleoPele,
             tipoPelo,
             infoRelevante,
-            fichaAnamneseId,
+            clientId,
         } = createAnamneseSobrancelhaBody.parse(request.body);
 
         await prisma.anamneseSobrancelha.create({
@@ -176,10 +192,10 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_anamnese_sob_chumbo: chumbo,
                 tb_anamnese_sob_sensi: sensi,
                 tb_anamnese_sob_caspa: caspa,
-                tb_anamnese_sob_tipo_pele: tipoPele,
+                tb_anamnese_sob_oleo_pele: oleoPele,
                 tb_anamnese_sob_tipo_pelo: tipoPelo,
                 tb_anamnese_sob_info_relevante: infoRelevante,
-                tb_ficha_anamnese_id: fichaAnamneseId,
+                tb_cliente_id: clientId,
             }
         });
     });
@@ -188,39 +204,39 @@ export async function appRoutes(app: FastifyInstance) {
     app.post('/createAnamneseMaquiagem', async (request) => {
         const createAnamneseMaquiagemBody = z.object({
             tratamento: z.string(),
-            machaPele: z.boolean(),
+            manchaPele: z.boolean(),
             lenteCont: z.boolean(),
             tipoPele: z.string(),
             oleosidade: z.string(),
             probPele: z.string(),
             cirurgiaRosto: z.string(),
             infoRelevante: z.string(),
-            fichaAnamneseId: z.number(),
+            clientId: z.number(),
         });
 
         const {
             tratamento,
-            machaPele,
+            manchaPele,
             lenteCont,
             tipoPele,
             oleosidade,
             probPele,
             cirurgiaRosto,
             infoRelevante,
-            fichaAnamneseId,
+            clientId,
         } = createAnamneseMaquiagemBody.parse(request.body);
 
         await prisma.anamneseMaquiagem.create({
             data: {
                 tb_anamnese_maq_tratamento: tratamento,
-                tb_anamnese_maq_macha_pele: machaPele,
+                tb_anamnese_maq_mancha_pele: manchaPele,
                 tb_anamnese_maq_lente_cont: lenteCont,
                 tb_anamnese_maq_tipo_pele: tipoPele,
                 tb_anamnese_maq_oleosidade: oleosidade,
                 tb_anamnese_maq_prob_pele: probPele,
                 tb_anamnese_maq_cirurgia_rosto: cirurgiaRosto,
                 tb_anamnese_maq_info_relevante: infoRelevante,
-                tb_ficha_anamnese_id: fichaAnamneseId,
+                tb_cliente_id: clientId,
             }
         });
     });
@@ -236,7 +252,7 @@ export async function appRoutes(app: FastifyInstance) {
             esportesImpacto: z.boolean(),
             piscMar: z.boolean(),
             infoRelevante: z.string(),
-            fichaAnamneseId: z.number(),
+            clientId: z.number(),
         });
 
         const {
@@ -248,7 +264,7 @@ export async function appRoutes(app: FastifyInstance) {
             esportesImpacto,
             piscMar,
             infoRelevante,
-            fichaAnamneseId,
+            clientId,
         } = createAnamneseUnhasBody.parse(request.body);
 
         await prisma.anamneseUnhas.create({
@@ -261,7 +277,7 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_anamnese_unhas_esportes_impacto: esportesImpacto,
                 tb_anamnese_unhas_pisc_mar: piscMar,
                 tb_anamnese_unhas_info_relevante: infoRelevante,
-                tb_ficha_anamnese_id: fichaAnamneseId,
+                tb_cliente_id: clientId,
             }
         });
     });
@@ -276,7 +292,7 @@ export async function appRoutes(app: FastifyInstance) {
             usoColirio: z.boolean(),
             doenca: z.string(),
             infoRelevante: z.string(),
-            fichaAnamneseId: z.number(),
+            clientId: z.number(),
         });
 
         const {
@@ -287,7 +303,7 @@ export async function appRoutes(app: FastifyInstance) {
             usoColirio,
             doenca,
             infoRelevante,
-            fichaAnamneseId,
+            clientId,
         } = createAnamneseCiliosBody.parse(request.body);
 
         await prisma.anamneseCilios.create({
@@ -299,7 +315,7 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_anamnese_cil_uso_colirio: usoColirio,
                 tb_anamnese_cil_doenca: doenca,
                 tb_anamnese_cil_info_relevante: infoRelevante,
-                tb_ficha_anamnese_id: fichaAnamneseId,
+                tb_cliente_id: clientId,
             }
         });
     });
@@ -314,7 +330,7 @@ export async function appRoutes(app: FastifyInstance) {
             doencaCC: z.string(),
             cirurgiaLesao: z.string(),
             infoRelevante: z.string(),
-            fichaAnamneseId: z.number(),
+            clientId: z.number(),
         });
 
         const {
@@ -325,7 +341,7 @@ export async function appRoutes(app: FastifyInstance) {
             doencaCC,
             cirurgiaLesao,
             infoRelevante,
-            fichaAnamneseId,
+            clientId,
         } = createAnamneseCabeloBody.parse(request.body);
 
         await prisma.anamneseCabelo.create({
@@ -337,7 +353,7 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_anamnese_cab_doenca_cc: doencaCC,
                 tb_anamnese_cab_cirurgia_lesao: cirurgiaLesao,
                 tb_anamnese_cab_info_relevante: infoRelevante,
-                tb_ficha_anamnese_id: fichaAnamneseId,
+                tb_cliente_id: clientId,
             }
         });
     });
@@ -358,11 +374,7 @@ export async function appRoutes(app: FastifyInstance) {
 
         return { clients };*/
 
-        const cliente = await prisma.cliente.findMany({
-            where: {
-                tb_cliente_id: 2,
-            }
-        })
+        const cliente = await prisma.cliente.findMany()
 
         return cliente;
     });
@@ -395,7 +407,7 @@ export async function appRoutes(app: FastifyInstance) {
             latitude
         } = updateLocation.parse(request.body);
 
-        const profissionalId = 8;
+        const profissionalId = 11;
 
         await prisma.profissional.update({
             where: {
@@ -406,6 +418,207 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_profissional_longitude: longitude
             }
         });
+    });
+
+
+    const client_id = 1;
+
+    /*app.get('/getItem', async () => {
+
+        const itens = await prisma.item.findMany();
+
+        return itens;
+    });*/
+
+    app.get('/getItem', async () => {
+
+        const itens = await prisma.item.findMany({
+            include: {
+                catalogo: {
+                    include: {
+                        profissional: true
+                    }
+                }
+            },
+        });
+
+
+        const resultadoFormatado = itens.map((item) => ({
+            itemId: item.tb_item_id,
+            itemName: item.tb_item_nome,
+            itemDesc: item.tb_item_desc,
+            itemCost: item.tb_item_valor,
+            itemTime: item.tb_item_tempo,
+            itemImg: item.tb_item_imagem,
+            categoryId: item.tb_categoria_id,
+            catalogId: item.tb_catalogo_id,
+
+            professionalId: item.catalogo?.profissional?.tb_profissional_id,
+            professionalName: item.catalogo?.profissional?.tb_profissional_nome,
+
+        }));
+
+        return resultadoFormatado;
+
+    });
+
+
+
+    app.get('/getAnamneseGeral', async () => {
+
+        const anamneseGeral = await prisma.anamneseGeral.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseGeralResult = anamneseGeral.map((anamnese) => ({
+
+            anamneseGeralId: anamnese.tb_ficha_anamnese_id,
+            anamneseGeralGestante: anamnese.tb_ficha_anamnese_gestante,
+            anamneseGeralDiabete: anamnese.tb_ficha_anamnese_diabetes,
+            anamneseGeralMedicacao: anamnese.tb_ficha_anamnese_medicacao,
+            anamneseGeralAlergia: anamnese.tb_ficha_anamnese_alergia,
+            anamneseGeralConvulsao: anamnese.tb_ficha_anamnese_convulsao,
+            anamneseGeralHemofilico: anamnese.tb_ficha_anamnese_hemofilico,
+            anamneseGeralHipertensao: anamnese.tb_ficha_anamnese_hipertensao,
+            anamneseGeralTireoide: anamnese.tb_ficha_anamnese_tireoide,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseGeralResult;
+
+    });
+
+
+    app.get('/getAnamneseCabelo', async () => {
+
+        const anamneseCabelo = await prisma.anamneseCabelo.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseCabeloResult = anamneseCabelo.map((anamnese) => ({
+
+            anamneseCabId: anamnese.tb_anamnese_cab_id,
+            anamneseCabProbSaude: anamnese.tb_anamnese_cab_prob_saude,
+            anamneseCabQuimica: anamnese.tb_anamnese_cab_quimica,
+            anamneseCabFrequencia: anamnese.tb_anamnese_cab_frequencia,
+            anamneseCabProbFamiliar: anamnese.tb_anamnese_cab_prob_cap_familiar,
+            anamneseCabDoencaCc: anamnese.tb_anamnese_cab_doenca_cc,
+            anamneseCabCirurgiaLesao: anamnese.tb_anamnese_cab_cirurgia_lesao,
+            anamneseCabInfoRelativa: anamnese.tb_anamnese_cab_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseCabeloResult;
+
+    });
+
+    app.get('/getAnamneseUnha', async () => {
+
+        const anamneseUnhas = await prisma.anamneseUnhas.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseUnhasResult = anamneseUnhas.map((anamnese) => ({
+
+            anamneseUnhaId: anamnese.tb_anamnese_unhas_id,
+            anamneseUnhaRetCuticula: anamnese.tb_anamnese_unhas_ret_cuticula,
+            anamneseUnhaEncravada: anamnese.tb_anamnese_unhas_encravada,
+            anamneseUnhaProbOnicomicose: anamnese.tb_anamnese_unhas_prob_onicomicose,
+            anamneseUnhaProb: anamnese.tb_anamnese_unhas_prob,
+            anamneseUnhaRoerUnha: anamnese.tb_anamnese_unhas_roer_unha,
+            anamneseUnhaEsportesImpacto: anamnese.tb_anamnese_unhas_esportes_impacto,
+            anamneseUnhaPiscMar: anamnese.tb_anamnese_unhas_pisc_mar,
+            anamneseUnhaInfoRelevante: anamnese.tb_anamnese_unhas_pisc_mar,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseUnhasResult;
+
+    });
+
+    app.get('/getAnamneseMaq', async () => {
+
+        const anamneseMaq = await prisma.anamneseMaquiagem.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseMaqResult = anamneseMaq.map((anamnese) => ({
+
+            anamneseMaqId: anamnese.tb_anamnese_maq_id,
+            anamneseMaqTratamento: anamnese.tb_anamnese_maq_tratamento,
+            anamneseMaqManchaPele: anamnese.tb_anamnese_maq_mancha_pele,
+            anamneseMaqLenteCont: anamnese.tb_anamnese_maq_lente_cont,
+            anamneseMaqTipoPele: anamnese.tb_anamnese_maq_tipo_pele,
+            anamneseMaqOleosidade: anamnese.tb_anamnese_maq_oleosidade,
+            anamneseMaqProbPele: anamnese.tb_anamnese_maq_prob_pele,
+            anamneseMaqCirurgiaRosto: anamnese.tb_anamnese_maq_cirurgia_rosto,
+            anamanamneseMaqInfoRelevante: anamnese.tb_anamnese_maq_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseMaqResult;
+
+    });
+
+
+    app.get('/getAnamneseSob', async () => {
+
+        const anamneseSob = await prisma.anamneseSobrancelha.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseSobResult = anamneseSob.map((anamnese) => ({
+            anamneseSobId: anamnese.tb_anamnese_sob_id,
+            anamneseSobQuedaPelo: anamnese.tb_anamnese_sob_queda_pelos,
+            anamneseSobAlergiaHenna: anamnese.tb_anamnese_sob_alergia_henna,
+            anamneseSobChumbo: anamnese.tb_anamnese_sob_chumbo,
+            anamneseSobSensi: anamnese.tb_anamnese_sob_sensi,
+            anamneseSobCaspa: anamnese.tb_anamnese_sob_caspa,
+            anamneseSobOleoPele: anamnese.tb_anamnese_sob_oleo_pele,
+            anamneseSobTipoPelo: anamnese.tb_anamnese_sob_tipo_pelo,
+            anamneseSobInfoRelevante: anamnese.tb_anamnese_sob_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseSobResult;
+
+    });
+
+
+
+    app.get('/getAnamneseCilios', async () => {
+
+        const anamneseCil = await prisma.anamneseCilios.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseCilResult = anamneseCil.map((anamnese) => ({
+
+            anamneseCilId: anamnese.tb_anamnese_cil_id,
+            anamneseCilTratamento: anamnese.tb_anamnese_cil_tratamento,
+            anamneseCilProcedimento: anamnese.tb_anamnese_cil_procedimento,
+            anamneseCilProbOftalmo: anamnese.tb_anamnese_cil_prob_oftalmo,
+            anamneseCilDormeLado: anamnese.tb_anamnese_cil_dorme_lado,
+            anamneseCilUsoColirio: anamnese.tb_anamnese_cil_uso_colirio,
+            anamneseCilDoenca: anamnese.tb_anamnese_cil_doenca,
+            anamneseCilInfoRelevante: anamnese.tb_anamnese_cil_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseCilResult;
+
     });
 
 }
