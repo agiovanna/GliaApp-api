@@ -5,6 +5,9 @@ import z from 'zod';
 
 export async function appRoutes(app: FastifyInstance) {
 
+    const client_id = 1;
+
+
     //Criando profissional
     app.post('/createProfessional', async (request) => {
 
@@ -370,10 +373,6 @@ export async function appRoutes(app: FastifyInstance) {
     //Mostrando nome de clientes cadastrados
     app.get('/getClients', async () => {
 
-        /*const clients = await prisma.cliente.findMany()
-
-        return { clients };*/
-
         const cliente = await prisma.cliente.findMany()
 
         return cliente;
@@ -420,15 +419,6 @@ export async function appRoutes(app: FastifyInstance) {
         });
     });
 
-
-    const client_id = 1;
-
-    /*app.get('/getItem', async () => {
-
-        const itens = await prisma.item.findMany();
-
-        return itens;
-    });*/
 
     app.get('/getItem', async () => {
 
@@ -621,7 +611,306 @@ export async function appRoutes(app: FastifyInstance) {
 
     });
 
+   
+    app.get('/getItem', async () => {
+
+        const itens = await prisma.item.findMany({
+            include: {
+                catalogo: {
+                    include: {
+                        profissional: true
+                    }
+                }
+            },
+        });
+
+
+        const resultadoFormatado = itens.map((item) => ({
+            itemId: item.tb_item_id,
+            itemName: item.tb_item_nome,
+            itemDesc: item.tb_item_desc,
+            itemCost: item.tb_item_valor,
+            itemTime: item.tb_item_tempo,
+            itemImg: item.tb_item_imagem,
+            categoryId: item.tb_categoria_id,
+            catalogId: item.tb_catalogo_id,
+
+            professionalId: item.catalogo?.profissional?.tb_profissional_id,
+            professionalName: item.catalogo?.profissional?.tb_profissional_nome,
+
+        }));
+
+        return resultadoFormatado;
+
+    });
+
+
+    app.get('/getAnamneseGeral', async () => {
+
+        const anamneseGeral = await prisma.anamneseGeral.findMany({
+            include: {
+                cliente: true
+            }, where: {
+                tb_cliente_id: client_id,
+            }
+        });
+
+        const anamneseGeralResult = anamneseGeral.map((anamnese) => ({
+
+            anamneseGeralId: anamnese.tb_ficha_anamnese_id,
+            anamneseGeralGestante: anamnese.tb_ficha_anamnese_gestante,
+            anamneseGeralDiabete: anamnese.tb_ficha_anamnese_diabetes,
+            anamneseGeralMedicacao: anamnese.tb_ficha_anamnese_medicacao,
+            anamneseGeralAlergia: anamnese.tb_ficha_anamnese_alergia,
+            anamneseGeralConvulsao: anamnese.tb_ficha_anamnese_convulsao,
+            anamneseGeralHemofilico: anamnese.tb_ficha_anamnese_hemofilico,
+            anamneseGeralHipertensao: anamnese.tb_ficha_anamnese_hipertensao,
+            anamneseGeralTireoide: anamnese.tb_ficha_anamnese_tireoide,
+            ClienteId: anamnese.tb_cliente_id,
+            ClienteLat: anamnese.cliente?.tb_cliente_latitude,
+            ClienteLong: anamnese.cliente?.tb_cliente_longitude,
+            ClienteName: anamnese.cliente?.tb_cliente_nome,
+            ClienteTel: anamnese.cliente?.tb_cliente_tel
+        }));
+
+        return anamneseGeralResult;
+
+    });
+
+
+    app.get('/getAnamneseCabelo', async () => {
+
+        const anamneseCabelo = await prisma.anamneseCabelo.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseCabeloResult = anamneseCabelo.map((anamnese) => ({
+
+            anamneseCabId: anamnese.tb_anamnese_cab_id,
+            anamneseCabProbSaude: anamnese.tb_anamnese_cab_prob_saude,
+            anamneseCabQuimica: anamnese.tb_anamnese_cab_quimica,
+            anamneseCabFrequencia: anamnese.tb_anamnese_cab_frequencia,
+            anamneseCabProbFamiliar: anamnese.tb_anamnese_cab_prob_cap_familiar,
+            anamneseCabDoencaCc: anamnese.tb_anamnese_cab_doenca_cc,
+            anamneseCabCirurgiaLesao: anamnese.tb_anamnese_cab_cirurgia_lesao,
+            anamneseCabInfoRelativa: anamnese.tb_anamnese_cab_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseCabeloResult;
+
+    });
+
+    app.get('/getAnamneseUnha', async () => {
+
+        const anamneseUnhas = await prisma.anamneseUnhas.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseUnhasResult = anamneseUnhas.map((anamnese) => ({
+
+            anamneseUnhaId: anamnese.tb_anamnese_unhas_id,
+            anamneseUnhaRetCuticula: anamnese.tb_anamnese_unhas_ret_cuticula,
+            anamneseUnhaEncravada: anamnese.tb_anamnese_unhas_encravada,
+            anamneseUnhaProbOnicomicose: anamnese.tb_anamnese_unhas_prob_onicomicose,
+            anamneseUnhaProb: anamnese.tb_anamnese_unhas_prob,
+            anamneseUnhaRoerUnha: anamnese.tb_anamnese_unhas_roer_unha,
+            anamneseUnhaEsportesImpacto: anamnese.tb_anamnese_unhas_esportes_impacto,
+            anamneseUnhaPiscMar: anamnese.tb_anamnese_unhas_pisc_mar,
+            anamneseUnhaInfoRelevante: anamnese.tb_anamnese_unhas_pisc_mar,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseUnhasResult;
+
+    });
+
+    app.get('/getAnamneseMaq', async () => {
+
+        const anamneseMaq = await prisma.anamneseMaquiagem.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseMaqResult = anamneseMaq.map((anamnese) => ({
+
+            anamneseMaqId: anamnese.tb_anamnese_maq_id,
+            anamneseMaqTratamento: anamnese.tb_anamnese_maq_tratamento,
+            anamneseMaqManchaPele: anamnese.tb_anamnese_maq_mancha_pele,
+            anamneseMaqLenteCont: anamnese.tb_anamnese_maq_lente_cont,
+            anamneseMaqTipoPele: anamnese.tb_anamnese_maq_tipo_pele,
+            anamneseMaqOleosidade: anamnese.tb_anamnese_maq_oleosidade,
+            anamneseMaqProbPele: anamnese.tb_anamnese_maq_prob_pele,
+            anamneseMaqCirurgiaRosto: anamnese.tb_anamnese_maq_cirurgia_rosto,
+            anamanamneseMaqInfoRelevante: anamnese.tb_anamnese_maq_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseMaqResult;
+
+    });
+
+
+    app.get('/getAnamneseSob', async () => {
+
+        const anamneseSob = await prisma.anamneseSobrancelha.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseSobResult = anamneseSob.map((anamnese) => ({
+            anamneseSobId: anamnese.tb_anamnese_sob_id,
+            anamneseSobQuedaPelo: anamnese.tb_anamnese_sob_queda_pelos,
+            anamneseSobAlergiaHenna: anamnese.tb_anamnese_sob_alergia_henna,
+            anamneseSobChumbo: anamnese.tb_anamnese_sob_chumbo,
+            anamneseSobSensi: anamnese.tb_anamnese_sob_sensi,
+            anamneseSobCaspa: anamnese.tb_anamnese_sob_caspa,
+            anamneseSobOleoPele: anamnese.tb_anamnese_sob_oleo_pele,
+            anamneseSobTipoPelo: anamnese.tb_anamnese_sob_tipo_pelo,
+            anamneseSobInfoRelevante: anamnese.tb_anamnese_sob_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseSobResult;
+
+    });
+
+
+
+    app.get('/getAnamneseCilios', async () => {
+
+        const anamneseCil = await prisma.anamneseCilios.findMany({
+            where: {
+                tb_cliente_id: client_id
+            }
+        });
+
+        const anamneseCilResult = anamneseCil.map((anamnese) => ({
+
+            anamneseCilId: anamnese.tb_anamnese_cil_id,
+            anamneseCilTratamento: anamnese.tb_anamnese_cil_tratamento,
+            anamneseCilProcedimento: anamnese.tb_anamnese_cil_procedimento,
+            anamneseCilProbOftalmo: anamnese.tb_anamnese_cil_prob_oftalmo,
+            anamneseCilDormeLado: anamnese.tb_anamnese_cil_dorme_lado,
+            anamneseCilUsoColirio: anamnese.tb_anamnese_cil_uso_colirio,
+            anamneseCilDoenca: anamnese.tb_anamnese_cil_doenca,
+            anamneseCilInfoRelevante: anamnese.tb_anamnese_cil_info_relevante,
+            ClienteId: anamnese.tb_cliente_id
+        }));
+
+        return anamneseCilResult;
+
+    });
+
+    app.post('/createRequest', async (request) => {
+
+        const createClientBody = z.object({
+            itemId: z.number(),
+            clienteId: z.number(),
+            street: z.string(),
+            postalCode: z.string(),
+            neighborhood: z.string(),
+            city: z.string(),
+            state: z.string(),
+        });
+
+        const {
+            itemId,
+            clienteId,
+            street,
+            postalCode,
+            neighborhood,
+            city,
+            state,
+        } = createClientBody.parse(request.body);
+
+        await prisma.solicitacao.create({
+            data: {
+                tb_solicitacao_status: "Em andamento",
+                tb_item_id: itemId,
+                tb_cliente_id: clienteId,
+                tb_solicitacao_bairro: neighborhood,
+                tb_solicitacao_cidade: city,
+                tb_solicitacao_rua: street,
+                tb_solicitacao_estado: state,
+                tb_solicitacao_cep: postalCode,
+            }
+        });
+
+    });
+
+
+    app.get('/getRequest', async () => {
+
+        const requestDatas = await prisma.solicitacao.findMany({
+            include: {
+                cliente: true,
+                item: {
+                    include: {
+                        catalogo: {
+                            include: {
+                                profissional: true
+                            }
+                        }
+                    }
+                },
+                
+            },
+            where: {
+                tb_solicitacao_status: "Em andamento"
+            }
+        })
+
+        const requets = requestDatas.map((data) => ({
+
+            requestId: data.tb_solicitacao_id,
+            requestStreet: data.tb_solicitacao_rua,
+            requestNeighborhood: data.tb_solicitacao_bairro,
+            requestPostalCode: data.tb_solicitacao_cep,
+            requestCity: data.tb_solicitacao_cidade,
+            itemName: data.item?.tb_item_nome,
+            itemCost: data.item?.tb_item_valor,
+            itemDescription: data.item?.tb_item_desc,
+            clientName: data.cliente?.tb_cliente_nome,
+            clientImg: data.cliente?.tb_cliente_img,
+            professionalName: data.item?.catalogo?.profissional.tb_profissional_nome,
+        }));
+
+        return requets;
+    });
+
+
+    app.put('/updateRequest', async (request) => {
+
+        const statusRequest = z.object({
+            requestId: z.number(),
+        })
+
+        const {
+            requestId
+        } = statusRequest.parse(request.body);
+
+
+        await prisma.solicitacao.update({
+            where: {
+                tb_solicitacao_id: requestId,
+            },
+            data: {
+                tb_solicitacao_status: "Aceita"
+            }
+        });
+    });
+
+
 }
+
+
 
 
 

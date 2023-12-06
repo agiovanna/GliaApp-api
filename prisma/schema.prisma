@@ -227,6 +227,11 @@ model Solicitacao {
   tb_solicitacao_createdAt DateTime @default(now())
   tb_solicitacao_updateAt  DateTime @updatedAt
   tb_solicitacao_status    String
+  tb_solicitacao_rua       String
+  tb_solicitacao_bairro    String
+  tb_solicitacao_cep       String
+  tb_solicitacao_cidade    String
+  tb_solicitacao_estado    String
   tb_item_id               Int
   tb_cliente_id            Int
 
@@ -239,10 +244,10 @@ model Solicitacao {
 }
 
 model Servico {
-  tb_servico_id          Int      @id @default(autoincrement())
+  tb_servico_id          Int       @id @default(autoincrement())
   tb_servico_status      String
   tb_servico_hora_inicio DateTime
-  tb_servico_hora_final  DateTime
+  tb_servico_hora_final  DateTime?
   tb_solicitacao_id      Int
   tb_profissional_id     Int
 
@@ -256,9 +261,11 @@ model Servico {
 }
 
 model Avaliacao {
-  tb_avaliacao_id   Int   @id @default(autoincrement())
-  tb_avaliacao_nota Float
-  tb_servico_id     Int
+  tb_avaliacao_id        Int      @id @default(autoincrement())
+  tb_avaliacao_nota      Float
+  tb_avaliacao_createdAt DateTime @default(now())
+  tb_avaliacao_updatedAt DateTime @updatedAt
+  tb_servico_id          Int
 
   //relation
   servico Servico @relation(fields: [tb_servico_id], references: [tb_servico_id])
