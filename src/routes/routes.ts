@@ -439,7 +439,7 @@ export async function appRoutes(app: FastifyInstance) {
             itemDesc: item.tb_item_desc,
             itemCost: item.tb_item_valor,
             itemTime: item.tb_item_tempo,
-            itemImg: item.tb_item_imagem,
+            itemImg: item.tb_item_img,
             categoryId: item.tb_categoria_id,
             catalogId: item.tb_catalogo_id,
 
@@ -631,7 +631,7 @@ export async function appRoutes(app: FastifyInstance) {
             itemDesc: item.tb_item_desc,
             itemCost: item.tb_item_valor,
             itemTime: item.tb_item_tempo,
-            itemImg: item.tb_item_imagem,
+            itemImg: item.tb_item_img,
             categoryId: item.tb_categoria_id,
             catalogId: item.tb_catalogo_id,
 
@@ -905,6 +905,296 @@ export async function appRoutes(app: FastifyInstance) {
                 tb_solicitacao_status: "Aceita"
             }
         });
+    });
+
+    //CREATE
+
+     //criando item
+     app.post('/createItem', async (request) => {
+        const createItemBody = z.object({
+            name: z.string(),
+            describe: z.string(),
+            cost: z.number(),
+            time: z.number(),
+            imgReference: z.string(),
+            category_id: z.number(),
+            catalog_id: z.number(),
+        });
+
+        const {
+            name,
+            describe,
+            cost,
+            time,
+            imgReference,
+            category_id,
+            catalog_id,
+        } = createItemBody.parse(request.body);
+
+
+
+        await prisma.item.create({
+            data: {
+                tb_item_nome: name,
+                tb_item_desc: describe,
+                tb_item_valor: cost,
+                tb_item_tempo: time,
+                tb_item_img: imgReference,
+                tb_categoria_id: category_id,
+                tb_catalogo_id: catalog_id,
+
+            }
+        });
+    });
+
+    //criando catálogo
+    app.post('/createCatalog', async (request) => {
+        const createCatalogBody = z.object({
+            name: z.string(),
+            describe: z.string(),
+            professional_id: z.number(),
+        });
+
+        const {
+            name,
+            describe,
+            professional_id
+        } = createCatalogBody.parse(request.body);
+
+        await prisma.catalogo.create({
+            data: {
+                tb_catalogo_nome: name,
+                tb_catalogo_desc: describe,
+                tb_profissional_id: professional_id
+            }
+        });
+    });
+
+    //criando avaliação
+    app.post('/createRating', async (request) => {
+        const createRatingBody = z.object({
+            score: z.number(),
+            comment: z.string(),
+            service_id: z.number(),
+        });
+
+        const {
+            score,
+            comment,
+            service_id
+        } = createRatingBody.parse(request.body);
+
+        await prisma.avaliacao.create({
+            data: {
+                tb_avaliacao_nota: score,
+                tb_avaliacao_comentario: comment,
+                tb_servico_id: service_id
+            }
+        });
+    });
+
+     //SELECTS
+
+    //Mostrando informações dos profissionais cadastrados
+    app.get<{ Params: { id: string } }>('/getProfessionalsInfo/:id', async (request) => {
+
+        const id = parseInt(request.params.id, 10);
+
+        const info = await prisma.profissional.findUnique({
+            where: {
+                tb_profissional_id: id,
+            },
+            select: {
+                tb_profissional_desc: true,
+                tb_profissional_cnpj: true,
+            }
+        });
+
+        return { info };
+    });
+
+    //Mostrando catálogos e itens cadastrados
+    app.get('/getItensCatalogs', async () => {
+
+        const catalog = await prisma.catalogo.findMany({
+            select: {
+                tb_catalogo_nome: true,
+                tb_catalogo_desc: true,
+                tb_catalogo_id: true,
+                itens: {
+                    select: {
+                        tb_item_img: true,
+                        tb_item_nome: true,
+                        tb_item_desc: true,
+                        tb_item_tempo: true,
+                        tb_item_valor: true,
+                    },
+                },
+            },
+        });
+
+        return { catalog };
+
+    });
+
+    //Mostrando avaliações e clientes 
+    app.get<{ Params: { id: string } }>('/getRatings/:id', async (request) => {
+
+        const id = parseInt(request.params.id, 10);
+
+        const rating = await prisma.avaliacao.findUnique({
+            where: {
+                tb_avaliacao_id: id,
+            },
+            select: {
+                tb_avaliacao_nota: true,
+                tb_avaliacao_comentario: true,
+                tb_avaliacao_createdAt: true,
+
+                servico: {
+                    select: {
+                        solicitacao: {
+                            select: {
+                                cliente: {
+                                    select: {
+                                        tb_cliente_nome: true,
+                                        tb_cliente_img: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+            }
+        });
+
+        return { rating };
+    });
+
+    //Mostrando media das notas das avaliações
+    app.get<{ Params: { id: string } }>('/getRatingsStars/:id', async (request) => {
+
+        const id = parseInt(request.params.id, 10);
+
+        const ratingStars = await prisma.avaliacao.aggregate({
+           
+            where:{
+                tb_avaliacao_id: id
+               },
+                _avg:{
+            tb_avaliacao_nota: true
+           }
+        });
+
+        const stars = ratingStars._avg.tb_avaliacao_nota || 0; // Se não houver avaliações, a média será 0
+
+        return { stars };
+    });
+
+    //mostrando o número de avaliações feitas
+    app.get<{ Params: { id: string } }>('/getRatingCount/:id', async (request) => {
+        const id = parseInt(request.params.id, 10);
+      
+        const ratingCount = await prisma.avaliacao.count({
+          where: {
+            tb_servico_id: id,
+          },
+        });
+      
+        return { ratingCount };
+      });
+
+      //UPDATE 
+
+    //atualizando imagem cliente
+    app.put<{ Params: { id: string } }>('/updateImgClient/:id', async (request) => {
+        const updateImgClientBody = z.object({
+            imgReference: z.string(),
+        });
+
+        const id = parseInt(request.params.id, 10);
+        const update = updateImgClientBody.parse(request.body);
+
+        // pelo menos um campo para atualização foi inserido ?
+        if (Object.keys(update).length === 0) {
+            return { message: "É necessário que uma imagem seja inserida." };
+        }
+
+        //atualização no banco de dados
+        const updatedImgClient = await prisma.cliente.update({
+            where:
+            {
+                tb_cliente_id: id
+            },
+            data:
+            {
+                tb_cliente_img: update.imgReference,
+            }
+        });
+
+        console.log("Sucesso na imagem!");
+    });
+
+
+
+    //atualizando imagem profissional
+    app.put<{ Params: { id: string } }>('/updateImgProfessional/:id', async (request) => {
+        const updateImgProfessionalBody = z.object({
+            imgReference: z.string(),
+        });
+
+        const id = parseInt(request.params.id, 10);
+        const update = updateImgProfessionalBody.parse(request.body);
+
+        // pelo menos um campo para atualização foi inserido ?
+        if (Object.keys(update).length === 0) {
+            return { message: "É necessário que uma iamgem seja inserida." };
+        }
+
+        //atualização no banco de dados
+        const updatedImgProfessional = await prisma.profissional.update({
+            where:
+            {
+                tb_profissional_id: id
+            },
+            data:
+            {
+                tb_profissional_img: update.imgReference,
+            }
+        });
+
+        console.log("Sucesso na imagem!");
+    });
+
+
+    //atualizando descrição profissional
+    app.put<{ Params: { id: string } }>('/updateDescProfessional/:id', async (request) => {
+        const updateDescProfessionalBody = z.object({
+            desc: z.string(),
+        });
+
+        const id = parseInt(request.params.id, 10);
+        const update = updateDescProfessionalBody.parse(request.body);
+
+        // pelo menos um campo para atualização foi inserido ?
+        if (Object.keys(update).length === 0) {
+            console.log('Nenhuma descrição digitada.');
+        }
+
+        //atualização no banco de dados
+        const updatedDescProfessional = await prisma.profissional.update({
+            where:
+            {
+                tb_profissional_id: id
+            },
+            data:
+            {
+                tb_profissional_desc: update.desc,
+            }
+        });
+
+        console.log("Sucesso na imagem!");
     });
 
 

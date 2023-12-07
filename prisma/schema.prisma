@@ -32,6 +32,7 @@ model Profissional {
   tb_profissional_longitude     Float?
   tb_profissional_status        Boolean  @default(false)
   tb_profissional_img           String?
+  tb_profissional_desc          String?
 
   //relações 
 
@@ -48,7 +49,7 @@ model Item {
   tb_item_nome    String
   tb_item_desc    String?
   tb_item_valor   Decimal
-  tb_item_imagem  String
+  tb_item_img     String
   tb_item_tempo   Int
   tb_categoria_id Int
   tb_catalogo_id  Int
@@ -261,11 +262,12 @@ model Servico {
 }
 
 model Avaliacao {
-  tb_avaliacao_id        Int      @id @default(autoincrement())
-  tb_avaliacao_nota      Float
-  tb_avaliacao_createdAt DateTime @default(now())
-  tb_avaliacao_updatedAt DateTime @updatedAt
-  tb_servico_id          Int
+  tb_avaliacao_id         Int      @id @default(autoincrement())
+  tb_avaliacao_nota       Float
+  tb_avaliacao_createdAt  DateTime @default(now())
+  tb_avaliacao_updatedAt  DateTime @updatedAt
+  tb_avaliacao_comentario String?
+  tb_servico_id           Int
 
   //relation
   servico Servico @relation(fields: [tb_servico_id], references: [tb_servico_id])
