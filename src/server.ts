@@ -12,10 +12,28 @@ const io = new SocketServer(httpServer);
 app.register(cors);
 
 //Conexão com o socket.io que permite a vizualização em tempo real
-io.on('connection', (socket) => {
+io.on('connection', () => {
     console.log('Client Connected :D');
 
     io.emit('searchProfessionals');
+});
+
+
+io.on('connection', () => {
+
+    io.emit('updateRequests');
+});
+
+
+io.on('connection', (socket) => {
+
+    socket.on('responseForClient', (message) => {
+
+        io.emit('responseClient', message);
+
+        console.log(message);
+    });
+
 });
 
 //Rotas da aplicação
