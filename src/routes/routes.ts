@@ -880,6 +880,7 @@ export async function appRoutes(app: FastifyInstance) {
                         tb_item_desc: true,
                         tb_item_tempo: true,
                         tb_item_valor: true,
+                        tb_item_id: true
                     },
                 },
             },
@@ -951,11 +952,13 @@ export async function appRoutes(app: FastifyInstance) {
         const ratingCount = await prisma.avaliacao.count({
             where: {
                 tb_servico_id: id,
-            },
+            },            
         });
 
         return { ratingCount };
     });
+
+
 
     //UPDATE 
 
