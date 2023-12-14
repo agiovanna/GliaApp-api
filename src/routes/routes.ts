@@ -12,7 +12,7 @@ export async function appRoutes(app: FastifyInstance) {
     app.post('/createProfessional', async (request) => {
 
         const createProfessionalBody = z.object({
-            name: z.string(),
+            name: z.string(), 
             birthDate: z.string().datetime(),
             telephone: z.string(),
             state: z.string(),
@@ -364,7 +364,12 @@ export async function appRoutes(app: FastifyInstance) {
     //Mostrando profissionais cadastrados
     app.get('/getProfessionals', async () => {
 
-        const professionals = await prisma.profissional.findMany();
+        const professionals = await prisma.profissional.findMany({
+            select:{
+                tb_profissional_id: true,
+                tb_profissional_nome: true
+            }
+        });
 
         return { professionals };
     });
@@ -865,65 +870,6 @@ export async function appRoutes(app: FastifyInstance) {
         return { info };
     });
 
-    //Mostrando catálogos e itens cadastrados
-    app.get('/getItensCatalogs', async () => {
-
-        const catalog = await prisma.catalogo.findMany({
-            select: {
-                tb_catalogo_nome: true,
-                tb_catalogo_desc: true,
-                tb_catalogo_id: true,
-                itens: {
-                    select: {
-                        tb_item_img: true,
-                        tb_item_nome: true,
-                        tb_item_desc: true,
-                        tb_item_tempo: true,
-                        tb_item_valor: true,
-                        tb_item_id: true
-                    },
-                },
-            },
-        });
-
-        return { catalog };
-
-    });
-
-    //Mostrando avaliações e clientes 
-    app.get<{ Params: { id: string } }>('/getRatings/:id', async (request) => {
-
-        const id = parseInt(request.params.id, 10);
-
-        const rating = await prisma.avaliacao.findUnique({
-            where: {
-                tb_avaliacao_id: id,
-            },
-            select: {
-                tb_avaliacao_nota: true,
-                tb_avaliacao_comentario: true,
-                tb_avaliacao_createdAt: true,
-
-                servico: {
-                    select: {
-                        solicitacao: {
-                            select: {
-                                cliente: {
-                                    select: {
-                                        tb_cliente_nome: true,
-                                        tb_cliente_img: true
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-        });
-
-        return { rating };
-    });
 
     //Mostrando media das notas das avaliações
     app.get<{ Params: { id: string } }>('/getRatingsStars/:id', async (request) => {
@@ -951,12 +897,51 @@ export async function appRoutes(app: FastifyInstance) {
 
         const ratingCount = await prisma.avaliacao.count({
             where: {
-                tb_servico_id: id,
-            },            
+                servico:{
+                tb_profissional_id: id
+                }
+            },
         });
 
         return { ratingCount };
     });
+
+
+
+
+    //Mostrando avaliações e quem as fez segundo profissional
+    app.get<{ Params: { id: string } }>('/getRatings/:id', async (request) => {
+
+        const id = parseInt(request.params.id, 10);
+
+        const rating = await prisma.servico.findMany({
+            where: {
+                tb_profissional_id: id,
+              },
+              include: {
+                avaliacao: {
+                  select: {
+                    tb_avaliacao_nota: true,
+                    tb_avaliacao_comentario: true,
+                    tb_avaliacao_createdAt: true,
+                  },
+                },
+                solicitacao: {
+                  include: {
+                    cliente: {
+                      select: {
+                        tb_cliente_nome: true,
+                        tb_cliente_img: true,
+                      },
+                    },
+                  },
+                },
+              },
+            });
+
+        return { rating };
+    });
+
 
 
 
@@ -1051,6 +1036,51 @@ export async function appRoutes(app: FastifyInstance) {
 
         console.log("Sucesso na imagem!");
     });
+
+
+    //Mostrando catalogos e itens cadastrados
+    app.get<{ Params: { id: string } }>('/getCatalog/:id', async (request) => {
+
+        const id = parseInt(request.params.id, 10);
+
+        const catalog = await prisma.catalogo.findMany({
+
+            where: {
+                tb_profissional_id: id
+            },
+             select: {
+                tb_catalogo_nome: true,
+                tb_catalogo_desc: true,
+                tb_catalogo_id: true,
+
+                profissional:{
+                    select:{
+                        tb_profissional_nome: true,
+                        tb_profissional_id: true
+                    }
+                },
+
+                itens: {
+                    select: {
+                        tb_item_img: true,
+                        tb_item_nome: true,
+                        tb_item_desc: true,
+                        tb_item_tempo: true,
+                        tb_item_valor: true,
+                        tb_item_id: true,
+                        tb_categoria_id: true,
+                        tb_catalogo_id: true
+                    },
+                    
+                },
+            },
+        });
+
+
+
+        return { catalog };
+    });
+
 
 }
 
